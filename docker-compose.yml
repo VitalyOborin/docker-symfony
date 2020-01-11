@@ -1,0 +1,74 @@
+version: '3.7'
+services:
+  nginx:
+    image: nginx:latest
+    container_name: nginx
+    restart: unless-stopped
+    volumes:
+      - ../sites/:/var/www/html/
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./nginx/logs/:/var/log/nginx/
+      - ./nginx/sites-allowed/:/etc/nginx/sites-allowed/
+    tty: true
+    ports:
+      - "80:80"
+      - "443:443"
+    links:
+      - php
+    networks:
+      - default
+  php:
+    build:
+      context: ./php
+    container_name: php
+    volumes:
+      - ../sites/:/var/www/html/
+    ports:
+      - "9001:9001"
+    depends_on:
+      - mysql
+    networks:
+      - default
+  mysql:
+    image: mysql:latest
+    container_name: mysql
+    hostname: "mysql"
+    command: --character-set-server=utf8mb4 --default-authentication-plugin=mysql_native_password
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: symfony
+      MYSQL_USER: symfony
+      MYSQL_PASSWORD: Symfony123!
+    volumes:
+      - ./mysql/data:/var/lib/mysql
+      - ./mysql/my.cnf:/etc/mysql/my.cnf
+    ports:
+      - "3306:3306"
+    networks:
+      - default
+  rabbitmq:
+    image: "rabbitmq:3-management"
+    hostname: "rabbit"
+    container_name: rabbitmq
+    labels:
+      NAME: "rabbitmq"
+    volumes:
+      - ./rabbitmq/rabbitmq.conf:/etc/rabbitmq/rabbitmq.config
+    ports:
+      - "15672:15672"
+    networks:
+      - default
+  redis:
+    image: "redis:latest"
+    command: redis-server /usr/local/etc/redis/redis.conf
+    hostname: "redis"
+    container_name: redis
+    volumes:
+      - ./redis/data/:/data
+      - ./redis/redis.conf:/usr/local/etc/redis/redis.conf
+    networks:
+      - default
+networks:
+  default:
+    driver: bridge
