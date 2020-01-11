@@ -2,3 +2,5 @@
 /redis/data/
 /nginx/logs/
 /mysql/data/
+*.log
+!.gitignore
