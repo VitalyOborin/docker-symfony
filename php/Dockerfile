@@ -15,6 +15,6 @@ RUN rm -f /usr/local/etc/php/conf.d/docker-php-ext-calendar.ini \
     /usr/local/etc/php/conf.d/docker-php-ext-phalcon.ini \
     /usr/local/etc/php/conf.d/docker-php-ext-pgsql.ini \
     /usr/local/etc/php/conf.d/docker-php-ext-uploadprogress.ini
-WORKDIR /var/www/html/default
+WORKDIR /var/www/html/
 EXPOSE 9000
 CMD ["php-fpm"]
