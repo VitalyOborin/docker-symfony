@@ -18,16 +18,19 @@ services:
     networks:
       - default
   php:
-    build:
-      context: ./php
+    image: devilbox/php-fpm:7.4-work
     container_name: php
     volumes:
       - ../sites/:/var/www/html/
       - ./php/php.ini:/usr/local/etc/php/conf.d/zzz-php.ini
-    ports:
-      - "9001:9001"
+    environment:
+      - DISABLE_MODULES=calendar,enchant,apcu,gmp,imagick,ldap,interbase,memcached,memcache,msgpack,phalcon,pgsql,swoole,uploadprogress,xdebug
+      - ENABLE_MODULES=redis,rdkafka
+      - HOST_PATH_HTTPD_DATADIR=/var/www/html/cart
     depends_on:
       - mysql
+      - kafka
+      - zookeeper
     networks:
       - default
   mysql:
@@ -78,9 +81,13 @@ services:
       - zookeeper
     ports:
       - '9092'
+      - '29092'
     environment:
       - KAFKA_CFG_ZOOKEEPER_CONNECT=zookeeper:2181
       - ALLOW_PLAINTEXT_LISTENER=yes
+      - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      - KAFKA_CFG_LISTENERS=PLAINTEXT://:9092,PLAINTEXT_HOST://:29092
+      - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://kafka:9092,PLAINTEXT_HOST://localhost:29092
     networks:
       - default
   redis:
