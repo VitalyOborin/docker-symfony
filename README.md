@@ -9,7 +9,7 @@ Create directory, for example `docker`. In that directory run `git clone git@git
 * In nginx/sites-allowed/default.conf change path `root /var/www/html/cart/public;` to your default site. /var/www/html/ is already mounted in docker-compose.yml.
  
 Now you can run services:
-`docker-compose up -d --build`. 
+`docker-compose up -d`. 
 ## Stop
 `docker-compose down`
 ## Reload nginx configs
